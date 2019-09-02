@@ -19,6 +19,15 @@
     nanoid "^2.1.0"
     uuid "^3.3.3"
 
+"@sonetjs/utils@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@sonetjs/utils/-/utils-2.0.0.tgz#c8c355d2e697b4e01aea37b39744131665dc1ec0"
+  integrity sha512-rAakJev9l+ZrxoyHHfoHVZd1qVj/W/K7HLeGmaIAeyKQgzaBeUOmSSp8GauRIjPzpKovJHhMroldtr3tk9qAbg==
+  dependencies:
+    nanoid "^2.1.0"
+    node-forge "^0.8.5"
+    uuid "^3.3.3"
+
 bin-protocol@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/bin-protocol/-/bin-protocol-3.1.1.tgz#8c1e59febc789f7eb71b48de8d6354d53ff1c5f1"
@@ -42,6 +51,11 @@ nanoid@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-2.1.0.tgz#3de3dbd68cfb2f3bd52550e2bfd439cf75040eb2"
   integrity sha512-g5WwS+p6Cm+zQhO2YOpRbQThZVnNb7DDq74h8YDCLfAGynrEOrbx2E16dc8ciENiP1va5sqaAruqn2sN+xpkWg==
+
+node-forge@^0.8.5:
+  version "0.8.5"
+  resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.8.5.tgz#57906f07614dc72762c84cef442f427c0e1b86ee"
+  integrity sha512-vFMQIWt+J/7FLNyKouZ9TazT74PRV3wgv9UT4cRjC8BffxFbKXkgIWR42URCPSnHm/QDz6BOlb2Q0U4+VQT67Q==
 
 protocol-buffers-schema@^3.0.0:
   version "3.3.2"
