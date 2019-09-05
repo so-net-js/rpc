@@ -3,6 +3,7 @@ const CONST = require('../const');
 class Base {
   constructor(props) {
     this.defaultFailTimeout = props.timeout || CONST.DEFAULT_FAIL_TIMEOUT;
+    this.useCrypto = props.useCrypto || CONST.DEFAULT_USE_CRYPTO;
     this.registeredCallbacks = {};
     this.middlewares = {
       [CONST.MIDDLEWARE_ON_REGISTER]:            [],
