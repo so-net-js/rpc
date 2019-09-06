@@ -7,7 +7,7 @@
   "license":         "MIT",
   "private":         false,
   "dependencies":    {
-    "@sonetjs/utils":         "^2.0.0",
+    "@sonetjs/utils":         "^2.1.0",
     "@sonetjs/binary-parser": "^2.0.5"
   },
   "devDependencies": {

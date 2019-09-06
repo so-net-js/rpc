@@ -53,6 +53,14 @@ class Packet {
     let dt = this.getRaw();
     return encoder.encode(dt);
   }
+
+  getEventName() {
+    return this.meta.eventName;
+  }
+
+  getId() {
+    return this.id;
+  }
 }
 
 module.exports = Packet;

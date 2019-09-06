@@ -19,10 +19,10 @@
     nanoid "^2.1.0"
     uuid "^3.3.3"
 
-"@sonetjs/utils@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@sonetjs/utils/-/utils-2.0.0.tgz#c8c355d2e697b4e01aea37b39744131665dc1ec0"
-  integrity sha512-rAakJev9l+ZrxoyHHfoHVZd1qVj/W/K7HLeGmaIAeyKQgzaBeUOmSSp8GauRIjPzpKovJHhMroldtr3tk9qAbg==
+"@sonetjs/utils@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@sonetjs/utils/-/utils-2.1.0.tgz#38335dec71f68200ce186ee9ed45a2b2c0ce84ed"
+  integrity sha512-HEI0wXCH87RLqrKnzB8+wKW7mNa2ttzgd8jKoiEuPX8g/MoBfoDczcc/BvkBAf5q3n42JnAU1QW2lcL3PQGBVw==
   dependencies:
     nanoid "^2.1.0"
     node-forge "^0.8.5"

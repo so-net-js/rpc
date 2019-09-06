@@ -10,6 +10,7 @@ class RpcClient extends RpcBase {
   constructor(props) {
     super(props);
     this.socket = props.socket;
+    this.useCrypto = false;
     this.socket.on(CONST.SERVER, async (packet) => {
       await this.$setupIncomingPacketHandler(packet);
     });
@@ -31,7 +32,7 @@ class RpcClient extends RpcBase {
 
 
   async $processConnection() {
-    this.connectionInfo = await this.$doHandshake();
+    await this.$doHandshake();
     let shouldBreak = false;
     const $break = () => {
       shouldBreak = true;
@@ -52,7 +53,31 @@ class RpcClient extends RpcBase {
   }
 
   async $doHandshake() {
+    let info = await this.$fire({
+      eventName: CONST.HANDSHAKE_INIT
+    });
+    this.connectionInfo.connected = true;
+    this.connectionInfo.name = info.name;
+    this.connectionInfo.address = info.address;
+    this.connectionInfo.namespaces = info.namespaces;
+    if (!info.useCrypto) {
+      await this.$fire({
+        eventName: CONST.HANDSHAKE_FINISH
+      });
+      return;
+    }
+
+    let randomSalt = utils.crypto.hash(utils.id.uuid());
+    this.connectionInfo.secret = await this.$fire({
+      eventName: CONST.HANDSHAKE_GENERATE_KEY,
+      args:      [randomSalt],
+    });
+    // this.connectionInfo.useCrypto = info.useCrypto;
+    await this.$fire({
+      eventName: CONST.HANDSHAKE_FINISH
+    });
   }
+
 
   $initNamespaces() {
     Object.keys(this.connectionInfo.namespaces).forEach(namespace => {
@@ -86,11 +111,14 @@ class RpcClient extends RpcBase {
       this.socket.once(packet.getRaw().id, (respondPacket) => {
         clearTimeout(timer);
         try {
-          if (this.useCrypto) {
+          if (this.connectionInfo.useCrypto) {
             respondPacket = this.$decypherPacket(respondPacket);
           }
           respondPacket = Packet.fromEncodedPacket(respondPacket);
-          resolve(respondPacket.data);
+          if (respondPacket.getRaw().meta.error) {
+            throw new Error(`Code: ${respondPacket.getRaw().meta.errorCode}, Message: ${respondPacket.getRaw().data[0]}`);
+          }
+          resolve(respondPacket.getRaw().data[0]);
         } catch (e) {
           reject(new Error(errorCreator(e.message)));
         }
@@ -110,7 +138,7 @@ class RpcClient extends RpcBase {
     }
 
     let toSend = packet.getEncoded();
-    if (this.useCrypto) toSend = this.$cypherPacket(toSend);
+    if (this.connectionInfo.useCrypto) toSend = this.$cypherPacket(toSend);
     this.socket.emit(CONST.CLIENT, toSend);
     returnResult = await promise;
 
@@ -123,13 +151,15 @@ class RpcClient extends RpcBase {
     return returnResult;
   }
 
-  $decypherPacket() {
+
+  $decypherPacket(packet) {
 
   }
 
-  $cypherPacket() {
+  $cypherPacket(packet) {
 
   }
+
 }
 
 

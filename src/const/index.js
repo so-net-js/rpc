@@ -17,4 +17,9 @@ module.exports = {
   MIDDLEWARE_AFTER_RECEIVE_CALLBACK: 4,
   MIDDLEWARE_ON_CONNECTION:          5,
   MIDDLEWARE_ON_DISCONNECTION:       6,
+
+  // handshake events
+  HANDSHAKE_INIT:         '$--handshake-init--$',
+  HANDSHAKE_FINISH:       '$--handshake-finish--$',
+  HANDSHAKE_GENERATE_KEY: '$--handshake-generate-key--$'
 };
