@@ -1,13 +1,17 @@
 {
-  "name":         "@sonetjs/rpc",
-  "version":      "1.0.0",
-  "description":  "RPC like async/await wrapper",
-  "main":         "rpc.client.js",
-  "author":       "SonyaHon <volkov030@gmail.com>",
-  "license":      "MIT",
-  "private":      false,
-  "dependencies": {
+  "name":            "@sonetjs/rpc",
+  "version":         "1.0.0",
+  "description":     "RPC like async/await wrapper",
+  "main":            "rpc.client.js",
+  "author":          "SonyaHon <volkov030@gmail.com>",
+  "license":         "MIT",
+  "private":         false,
+  "dependencies":    {
     "@sonetjs/utils":         "^2.0.0",
     "@sonetjs/binary-parser": "^2.0.5"
+  },
+  "devDependencies": {
+    "socket.io":        "^2.2.0",
+    "socket.io-client": "^2.2.0"
   }
 }

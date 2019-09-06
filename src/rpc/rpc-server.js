@@ -16,7 +16,12 @@ class RpcServer extends RpcBase {
 
   async $setupClient(clientSocket) {
     this.logger.log(`${clientSocket.id} tries to connect`);
-    this.clients[clientSocket.id] = clientSocket;
+    this.clients[clientSocket.id] = {
+      socket:  clientSocket,
+      options: {
+        useCrypto: false,
+      }
+    };
     for (const mw of this.middlewares[CONST.MIDDLEWARE_ON_CONNECTION]) {
       await mw(clientSocket.id);
     }
@@ -24,7 +29,7 @@ class RpcServer extends RpcBase {
       await this.$processClientDisconnection(clientSocket.id);
     });
     clientSocket.on(CONST.CLIENT, async (packet) => {
-      await this.$processClientMessage(packet);
+      await this.$processClientMessage(clientSocket.id, packet);
     });
   }
 
@@ -36,7 +41,13 @@ class RpcServer extends RpcBase {
     delete this.clients[clientId];
   }
 
-  $processClientMessage(packet) {
+  $processClientMessage(id, packet) {
+    if (this.clients[id].options.useCrypto) packet = this.$decypherPacket(id, packet);
+    packet = new Packet.fromEncodedPacket(packet);
+    console.log(packet.getRaw());
+  }
+
+  $decypherPacket(id, packet) {
 
   }
 }
