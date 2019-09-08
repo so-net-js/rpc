@@ -2,27 +2,19 @@
 # yarn lockfile v1
 
 
-"@sonetjs/binary-parser@^2.0.5":
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/@sonetjs/binary-parser/-/binary-parser-2.0.5.tgz#8d57e06e3929a64711f5b2518e20a8cfff7c5d6f"
-  integrity sha512-1JtFY8riU+5DRKtS35BzFbHmPgxt88jJTlb70wAZUd9M/gDwnkuLz5ld3YXPisO1LncUjSoL/oN+CTCdCXkHRA==
+"@sonetjs/binary-parser@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@sonetjs/binary-parser/-/binary-parser-2.1.0.tgz#3e64711ed08cff5f68928bfcda0a06e224b55087"
+  integrity sha512-qgzGf4/xqhdBxhR6j+38JK73YZVxQ6hJkts6FYbKtr2j+13r/AqxLn5TQhO5x2mSbVINgf0YLCfacmqSv6hlFQ==
   dependencies:
-    "@sonetjs/utils" "^1.0.2"
+    "@sonetjs/utils" "^2.1.1"
     bin-protocol "^3.1.1"
     sugar "^2.0.6"
 
-"@sonetjs/utils@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@sonetjs/utils/-/utils-1.0.2.tgz#1aeff2c13de6d87555c09ccab496b7ac09fa6b3b"
-  integrity sha512-VC3ocCk4P7qLkcUS1eAvtm8CTYO0Tp7mA5blKiUiRGLbZDMfDavNyWWtqRhJeps8R1LEl2Dj2fKwellzEyYeVQ==
-  dependencies:
-    nanoid "^2.1.0"
-    uuid "^3.3.3"
-
-"@sonetjs/utils@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@sonetjs/utils/-/utils-2.1.0.tgz#38335dec71f68200ce186ee9ed45a2b2c0ce84ed"
-  integrity sha512-HEI0wXCH87RLqrKnzB8+wKW7mNa2ttzgd8jKoiEuPX8g/MoBfoDczcc/BvkBAf5q3n42JnAU1QW2lcL3PQGBVw==
+"@sonetjs/utils@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@sonetjs/utils/-/utils-2.1.1.tgz#2fe72f9fd1539af3dc50e4177d7c386a6d011bd7"
+  integrity sha512-rvByQK3vgTT53ieuSiYntY+HJKFG3Jox/VEfDA50XGAbiJRQ+fu95lIQwr3ULhOVRm+3r72lslSLxuby4Jr0oA==
   dependencies:
     nanoid "^2.1.0"
     node-forge "^0.8.5"

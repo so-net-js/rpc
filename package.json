@@ -7,8 +7,8 @@
   "license":         "MIT",
   "private":         false,
   "dependencies":    {
-    "@sonetjs/utils":         "^2.1.0",
-    "@sonetjs/binary-parser": "^2.0.5"
+    "@sonetjs/utils":         "^2.1.1",
+    "@sonetjs/binary-parser": "^2.1.0"
   },
   "devDependencies": {
     "socket.io":        "^2.2.0",

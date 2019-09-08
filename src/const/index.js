@@ -9,7 +9,7 @@ module.exports = {
   SERVER:              '0',
   CLIENT:              '1',
 
-  // middlewares
+  // middleware
   MIDDLEWARE_BEFORE_FIRE:            0,
   MIDDLEWARE_AFTER_FIRE:             1,
   MIDDLEWARE_ON_RECEIVE:             2,
