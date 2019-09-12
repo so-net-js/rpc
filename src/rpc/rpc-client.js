@@ -10,7 +10,6 @@ class RpcClient extends RpcBase {
     constructor(props) {
         super(props);
         this.socket = props.socket;
-        this.useCrypto = false;
         this.socket.on(CONST.SERVER, async (packet) => {
             await this.$setupIncomingPacketHandler(packet);
         });
@@ -25,9 +24,11 @@ class RpcClient extends RpcBase {
             name: '',
             address: '',
             namespaces: {},
-            useCrypto: false,
-            secret: '',
         };
+        if (this.useCrypto) {
+            this.connectionInfo.secret = null;
+            this.connectionInfo.ecdhKey = utils.crypto.generateECDHKeyPair();
+        }
     }
 
     async ready() {
@@ -59,29 +60,46 @@ class RpcClient extends RpcBase {
 
     async $doHandshake() {
         let info = await this.$fire({
-            eventName: CONST.HANDSHAKE_INIT
+            eventName: CONST.HANDSHAKE_INIT,
+            args: [this.useCrypto ? this.connectionInfo.ecdhKey.getPublic().encode('hex') : '']
         });
         this.connectionInfo.connected = true;
         this.connectionInfo.name = info.name;
         this.connectionInfo.address = info.address;
         this.connectionInfo.namespaces = info.namespaces;
-        if (!info.useCrypto) {
+        if (!this.useCrypto) {
             await this.$fire({
                 eventName: CONST.HANDSHAKE_FINISH
             });
-            return;
+            return this.emit('ready');
+        }
+        const serverPK = utils.crypto.getECDHPublicKeyFromHex(info.serverPublicKey);
+        this.connectionInfo.tempSharedKey = utils.crypto.deriveECDHSharedKey(this.connectionInfo.ecdhKey, serverPK.getPublic());
+
+        const msg = utils.crypto.hash(this.connectionInfo.tempSharedKey);
+        const sig = utils.crypto.ecdhSign(msg, this.connectionInfo.ecdhKey).toDER();
+
+        let serverRes = await this.$fire({
+            eventName: CONST.HANDSHAKE_CONFIRM,
+            args: [msg, sig]
+        });
+
+        if (!utils.crypto.ecdhVerify(serverRes.msg, serverRes.sig, serverPK)) {
+            console.log('Server is a lie!');
+            this.socket.close();
         }
 
-        let randomSalt = utils.crypto.hash(utils.id.uuid());
-        this.connectionInfo.secret = await this.$fire({
+        // start using temp generated shared key
+        this.connectionInfo.secret = utils.crypto.generatePasswordKey(this.connectionInfo.tempSharedKey);
+
+        let trueSecret = await this.$fire({
             eventName: CONST.HANDSHAKE_GENERATE_KEY,
-            args: [randomSalt],
+            args: [utils.crypto.hash(utils.id.uuid())]
         });
-        this.connectionInfo.secret = this.connectionInfo.secret.toString();
+        this.connectionInfo.secret = utils.crypto.generatePasswordKey(trueSecret);
         await this.$fire({
             eventName: CONST.HANDSHAKE_FINISH
         });
-        this.connectionInfo.useCrypto = info.useCrypto;
         this.emit('ready');
     }
 
@@ -124,7 +142,7 @@ class RpcClient extends RpcBase {
             this.socket.once(packet.getRaw().id, (respondPacket) => {
                 clearTimeout(timer);
                 try {
-                    if (this.connectionInfo.useCrypto) {
+                    if (this.connectionInfo.secret) {
                         respondPacket = this.$decipherPacket(respondPacket);
                     }
                     respondPacket = Packet.fromEncodedPacket(respondPacket);
@@ -151,7 +169,7 @@ class RpcClient extends RpcBase {
         }
 
         let toSend = packet.getEncoded();
-        if (this.connectionInfo.useCrypto) toSend = this.$cipherPacket(toSend);
+        if (this.connectionInfo.secret) toSend = this.$cipherPacket(toSend);
         this.socket.emit(CONST.CLIENT, toSend);
         returnResult = await promise;
 
