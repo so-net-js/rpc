@@ -8,7 +8,7 @@ class RpcClientNamespace {
         this.tempData = {};
         this.resetTempData();
         this.namespaceData = {
-            meta: null,
+            meta:    null,
             timeout: null
         };
         this.$initMethods();
@@ -51,15 +51,15 @@ class RpcClientNamespace {
                 });
                 self.resetTempData();
                 return res;
-            }
+            };
         });
     }
 
     resetTempData() {
         this.tempData = {
-            meta: null,
+            meta:    null,
             timeout: null,
-        }
+        };
     }
 }
 

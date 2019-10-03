@@ -21,18 +21,18 @@ class RpcClient extends RpcBase {
             await this.$processDisconnection();
         });
         this.connectionInfo = {
-            connected: false,
-            name: '',
-            address: '',
+            connected:  false,
+            name:       '',
+            address:    '',
             namespaces: {},
-            useCrypto: false,
-            secret: '',
+            useCrypto:  false,
+            secret:     '',
         };
     }
 
     async ready() {
         return new Promise(resolve => {
-            this.on('ready', resolve)
+            this.on('ready', resolve);
         });
     }
 
@@ -75,7 +75,7 @@ class RpcClient extends RpcBase {
         let randomSalt = utils.crypto.hash(utils.id.uuid());
         this.connectionInfo.secret = await this.$fire({
             eventName: CONST.HANDSHAKE_GENERATE_KEY,
-            args: [randomSalt],
+            args:      [randomSalt],
         });
         this.connectionInfo.secret = this.connectionInfo.secret.toString();
         await this.$fire({
@@ -111,7 +111,7 @@ class RpcClient extends RpcBase {
         packet.addMeta('eventName', props.eventName);
         if (props.meta) {
             Object.keys(props.meta).forEach(key => {
-                packet.addMeta(key, props.meta[key])
+                packet.addMeta(key, props.meta[key]);
             });
         }
         packet.setData(props.args);

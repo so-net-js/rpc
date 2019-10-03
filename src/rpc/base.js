@@ -9,46 +9,46 @@ class Base extends Events {
         this.useCrypto = props.useCrypto || CONST.DEFAULT_USE_CRYPTO;
         this.registeredCallbacks = {};
         this.middlewares = {
-            [CONST.MIDDLEWARE_ON_REGISTER]: [],
-            [CONST.MIDDLEWARE_ON_DISCONNECTION]: [],
-            [CONST.MIDDLEWARE_AFTER_FIRE]: [],
+            [CONST.MIDDLEWARE_ON_REGISTER]:            [],
+            [CONST.MIDDLEWARE_ON_DISCONNECTION]:       [],
+            [CONST.MIDDLEWARE_AFTER_FIRE]:             [],
             [CONST.MIDDLEWARE_AFTER_RECEIVE_CALLBACK]: [],
-            [CONST.MIDDLEWARE_BEFORE_FIRE]: [],
-            [CONST.MIDDLEWARE_ON_CONNECTION]: [],
-            [CONST.MIDDLEWARE_ON_RECEIVE]: [],
+            [CONST.MIDDLEWARE_BEFORE_FIRE]:            [],
+            [CONST.MIDDLEWARE_ON_CONNECTION]:          [],
+            [CONST.MIDDLEWARE_ON_RECEIVE]:             [],
         };
 
         this.formatters = {
-            type: (argName, argValue, type) => {
+            type:     (argName, argValue, type) => {
                 if (typeof argValue !== type && argValue !== undefined) {
                     return {
-                        error: true,
+                        error:        true,
                         errorMessage: `Param "${argName}" is "${typeof argValue}" instead of "${type}"`
-                    }
+                    };
                 }
             },
-            format: async (argName, argValue, func) => {
+            format:   async (argName, argValue, func) => {
                 try {
                     let res = await func(argValue);
                     return {
                         value: res,
-                    }
+                    };
                 } catch (e) {
                     return {
-                        error: true,
+                        error:        true,
                         errorMessage: `Format of param "${argName}" failed: ${e.message}`,
-                    }
+                    };
                 }
             },
             required: (argName, argValue, isTrue) => {
                 if (isTrue && argValue === undefined) {
                     return {
-                        error: true,
+                        error:        true,
                         errorMessage: `Param "${argName}" is required, but it is undefined`,
                     };
                 }
             },
-            default: (argName, argValue, defaultValue) => {
+            default:  (argName, argValue, defaultValue) => {
                 if (argValue === undefined) return {value: defaultValue};
             },
             validate: async (argName, argValue, validate) => {
@@ -56,14 +56,14 @@ class Base extends Events {
                     let res = await validate(argValue);
                     if (res) return;
                     return {
-                        error: true,
+                        error:        true,
                         errorMessage: `Param "${argName}" has not passed validation`
-                    }
+                    };
                 } catch (e) {
                     return {
-                        error: true,
+                        error:        true,
                         errorMessage: `Validation of param "${argName}" failed: ${e.message}`
-                    }
+                    };
                 }
             }
         };
@@ -172,7 +172,7 @@ class Base extends Events {
                 for (let formatter in options[argName]) {
                     let res = await self.formatters[formatter](argName, argValue, options[argName][formatter]);
                     if (res && res.error) {
-                        throw new Error(`Formatter error: Method: ${self.parseEventName(eventName)}, Message: ${res.errorMessage}`)
+                        throw new Error(`Formatter error: Method: ${self.parseEventName(eventName)}, Message: ${res.errorMessage}`);
                     }
                     if (res && res.value) finalValue = res.value;
                 }
@@ -181,13 +181,13 @@ class Base extends Events {
 
             clb = clb.bind(this);
             return await clb(...nArgs);
-        }
+        };
     }
 
     parseEventName(eventName) {
         console.log(eventName);
         let arr = eventName.split('::');
-        return arr.join('.')
+        return arr.join('.');
     }
 }
 

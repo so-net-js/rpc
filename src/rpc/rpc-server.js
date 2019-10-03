@@ -9,17 +9,17 @@ class RpcServer extends RpcBase {
         super(props);
         this.socketServer = props.socketServer;
         this.info = Object.assign({}, props.info, {
-            name: 'rpc-server',
-            address: 'localhost',
+            name:       'rpc-server',
+            address:    'localhost',
             namespaces: {},
-            useCrypto: this.useCrypto
+            useCrypto:  this.useCrypto
         });
         this.logger = props.logger || {
-            log: () => {
+            log:   () => {
             },
             error: () => {
             },
-            warn: () => {
+            warn:  () => {
             }
         };
         this.socketServer.onClientConnection(async (clientSocket) => {
@@ -52,16 +52,16 @@ class RpcServer extends RpcBase {
                 self.info.namespaces[namespaceName].push(eventName);
                 self.register(`${namespaceName}::${eventName}`, options, callback);
             }
-        }
+        };
     }
 
     async $setupClient(clientSocket) {
         this.logger.log(`${clientSocket.id} tries to connect`);
         this.clients[clientSocket.id] = {
-            socket: clientSocket,
+            socket:  clientSocket,
             options: {
                 useCrypto: false,
-                secret: null,
+                secret:    null,
             }
         };
         for (const mw of this.middlewares[CONST.MIDDLEWARE_ON_CONNECTION]) {
