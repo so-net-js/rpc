@@ -12,7 +12,6 @@ class RpcServer extends RpcBase {
             name:       'rpc-server',
             address:    'localhost',
             namespaces: {},
-            useCrypto:  this.useCrypto
         });
         this.logger = props.logger || {
             log:   () => {
@@ -27,13 +26,41 @@ class RpcServer extends RpcBase {
         });
         this.clients = {};
         const self = this;
-        this.register(CONST.HANDSHAKE_INIT, async function () {
-            return self.info;
+        this.register(CONST.HANDSHAKE_INIT, async function (clientPublicKey) {
+            if (!self.useCrypto) return self.info;
+            self.clients[this.clientId].options.clientPublicKey = utils.crypto.getECDHPublicKeyFromHex(clientPublicKey);
+            return Object.assign({}, self.info, {
+                serverPublicKey: self.clients[this.clientId].options.ecdhKey.getPublic().encode('hex'),
+            })
+        });
+
+        this.register(CONST.HANDSHAKE_CONFIRM, async function (msg, sign) {
+            if (!utils.crypto.ecdhVerify(msg, sign, self.clients[this.clientId].options.clientPublicKey)) {
+                self.clients[this.clientId].socket.close();
+                return;
+            }
+
+            self.clients[this.clientId].options.tempSecret = utils.crypto.deriveECDHSharedKey(
+                self.clients[this.clientId].options.ecdhKey,
+                self.clients[this.clientId].options.clientPublicKey.getPublic()
+            );
+
+            const msg2 = utils.crypto.hash(self.clients[this.clientId].options.tempSecret);
+            if (msg2 !== msg) {
+                self.clients[this.clientId].socket.close();
+                return;
+            }
+            const sig = utils.crypto.ecdhSign(msg2, self.clients[this.clientId].options.ecdhKey).toDER();
+
+            return {
+                msg: msg2,
+                sig
+            };
         });
 
         this.register(CONST.HANDSHAKE_GENERATE_KEY, async function (pass) {
-            self.clients[this.clientId].options.secret = utils.crypto.generateSyncKey(pass);
-            return Buffer.from(self.clients[this.clientId].options.secret);
+            self.clients[this.clientId].options.trueSecret = this.clientId + pass;
+            return self.clients[this.clientId].options.trueSecret;
         });
 
         this.register(CONST.HANDSHAKE_FINISH, async function () {
@@ -57,12 +84,16 @@ class RpcServer extends RpcBase {
 
     async $setupClient(clientSocket) {
         this.logger.log(`${clientSocket.id} tries to connect`);
-        this.clients[clientSocket.id] = {
-            socket:  clientSocket,
-            options: {
-                useCrypto: false,
-                secret:    null,
+        let options = {};
+        if (this.useCrypto) {
+            options = {
+                secret: null,
+                ecdhKey: utils.crypto.generateECDHKeyPair()
             }
+        }
+        this.clients[clientSocket.id] = {
+            socket: clientSocket,
+            options,
         };
         for (const mw of this.middlewares[CONST.MIDDLEWARE_ON_CONNECTION]) {
             await mw(clientSocket.id);
@@ -84,7 +115,9 @@ class RpcServer extends RpcBase {
     }
 
     async $processClientMessage(id, incPacket) {
-        if (this.clients[id].options.useCrypto) incPacket = this.$decipherPacket(id, incPacket);
+        if (this.clients[id].options.secret) {
+            incPacket = this.$decipherPacket(id, incPacket);
+        }
         incPacket = Packet.fromEncodedPacket(incPacket);
 
         let resPacket = new Packet(CONST.PACKET_TYPE_RESPOND, CONST.SERVER, incPacket.getId());
@@ -97,7 +130,7 @@ class RpcServer extends RpcBase {
             await mw(incPacket, resPacket, $break);
             if (shouldBreak) {
                 let payload = resPacket.getEncoded();
-                if (this.clients[id].options.useCrypto) payload = this.$cipherPacket(id, payload);
+                if (this.clients[id].options.secret) payload = this.$cipherPacket(id, payload);
                 this.clients[id].socket.emit(resPacket.getId(), payload);
                 return;
             }
@@ -107,7 +140,7 @@ class RpcServer extends RpcBase {
             resPacket.addMeta('error', true);
             resPacket.addMeta('errorCode', ERROR.RESPOND_NO_EVENT_HANDLER);
             let payload = resPacket.getEncoded();
-            if (this.clients[id].options.useCrypto) payload = this.$cipherPacket(id, payload);
+            if (this.clients[id].options.secret) payload = this.$cipherPacket(id, payload);
             this.clients[id].socket.emit(resPacket.getId(), payload);
             return;
         }
@@ -118,17 +151,22 @@ class RpcServer extends RpcBase {
             const result = await func(...incPacket.getRaw().data);
             resPacket.setData([result]);
             let payload = resPacket.getEncoded();
-            if (this.clients[id].options.useCrypto) payload = this.$cipherPacket(id, payload);
+            if (this.clients[id].options.secret) payload = this.$cipherPacket(id, payload);
             this.clients[id].socket.emit(resPacket.getId(), payload);
-            if (incPacket.getEventName() === CONST.HANDSHAKE_FINISH && this.clients[id].options.secret) {
-                this.clients[id].options.useCrypto = true;
+
+            if (incPacket.getEventName() === CONST.HANDSHAKE_CONFIRM && this.clients[id].options.tempSecret) {
+                this.clients[id].options.secret = utils.crypto.generatePasswordKey(this.clients[id].options.tempSecret);
             }
+            if (incPacket.getEventName() === CONST.HANDSHAKE_GENERATE_KEY && this.clients[id].options.trueSecret) {
+                this.clients[id].options.secret = utils.crypto.generatePasswordKey(this.clients[id].options.trueSecret);
+            }
+
         } catch (e) {
             resPacket.addMeta('error', true);
             resPacket.addMeta('errorCode', ERROR.UNKNOWN_ERROR);
             resPacket.setData([e.message]);
             let payload = resPacket.getEncoded();
-            if (this.clients[id].options.useCrypto) payload = this.$cipherPacket(id, payload);
+            if (this.clients[id].options.secret) payload = this.$cipherPacket(id, payload);
             this.clients[id].socket.emit(resPacket.getId(), payload);
 
         } finally {
