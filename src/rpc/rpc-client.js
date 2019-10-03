@@ -61,7 +61,7 @@ class RpcClient extends RpcBase {
     async $doHandshake() {
         let info = await this.$fire({
             eventName: CONST.HANDSHAKE_INIT,
-            args: [this.useCrypto ? this.connectionInfo.ecdhKey.getPublic().encode('hex') : '']
+            args:      [this.useCrypto ? this.connectionInfo.ecdhKey.getPublic().encode('hex') : '']
         });
         this.connectionInfo.connected = true;
         this.connectionInfo.name = info.name;
@@ -81,7 +81,10 @@ class RpcClient extends RpcBase {
 
         let serverRes = await this.$fire({
             eventName: CONST.HANDSHAKE_CONFIRM,
-            args: [msg, sig]
+            args:      [
+                msg,
+                sig
+            ]
         });
 
         if (!utils.crypto.ecdhVerify(serverRes.msg, serverRes.sig, serverPK)) {
@@ -94,7 +97,7 @@ class RpcClient extends RpcBase {
 
         let trueSecret = await this.$fire({
             eventName: CONST.HANDSHAKE_GENERATE_KEY,
-            args: [utils.crypto.hash(utils.id.uuid())]
+            args:      [utils.crypto.hash(utils.id.uuid())]
         });
         this.connectionInfo.secret = utils.crypto.generatePasswordKey(trueSecret);
         await this.$fire({
@@ -102,7 +105,6 @@ class RpcClient extends RpcBase {
         });
         this.emit('ready');
     }
-
 
     $initNamespaces() {
 
@@ -119,7 +121,6 @@ class RpcClient extends RpcBase {
 
     async $setupIncomingPacketHandler(packet) {
     }
-
 
     async $fire(props) {
         if (!props.eventName) throw new Error(errorCreator(ERROR.REQUEST_NO_EVENT));
@@ -182,7 +183,6 @@ class RpcClient extends RpcBase {
         return returnResult;
     }
 
-
     $decipherPacket(packet) {
         return Buffer.from(utils.crypto.decipherData(packet, this.connectionInfo.secret));
     }
@@ -190,7 +190,6 @@ class RpcClient extends RpcBase {
     $cipherPacket(packet) {
         return utils.crypto.cipherData(packet, this.connectionInfo.secret);
     }
-
 }
 
 

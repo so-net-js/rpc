@@ -31,7 +31,7 @@ class RpcServer extends RpcBase {
             self.clients[this.clientId].options.clientPublicKey = utils.crypto.getECDHPublicKeyFromHex(clientPublicKey);
             return Object.assign({}, self.info, {
                 serverPublicKey: self.clients[this.clientId].options.ecdhKey.getPublic().encode('hex'),
-            })
+            });
         });
 
         this.register(CONST.HANDSHAKE_CONFIRM, async function (msg, sign) {
@@ -87,9 +87,9 @@ class RpcServer extends RpcBase {
         let options = {};
         if (this.useCrypto) {
             options = {
-                secret: null,
+                secret:  null,
                 ecdhKey: utils.crypto.generateECDHKeyPair()
-            }
+            };
         }
         this.clients[clientSocket.id] = {
             socket: clientSocket,
