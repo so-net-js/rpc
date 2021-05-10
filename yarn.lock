@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@sonetjs/binary-parser@^2.1.0":
+"@sonetjs/binary-parser@latest":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@sonetjs/binary-parser/-/binary-parser-2.1.0.tgz#3e64711ed08cff5f68928bfcda0a06e224b55087"
   integrity sha512-qgzGf4/xqhdBxhR6j+38JK73YZVxQ6hJkts6FYbKtr2j+13r/AqxLn5TQhO5x2mSbVINgf0YLCfacmqSv6hlFQ==
@@ -20,7 +20,7 @@
     node-forge "^0.8.5"
     uuid "^3.3.3"
 
-"@sonetjs/utils@^2.3.2":
+"@sonetjs/utils@latest":
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/@sonetjs/utils/-/utils-2.3.2.tgz#e09b8e0619952d456e1fec0c216711d4ad1a0891"
   integrity sha512-Qw8LBRoc4whDzHk14nJOL1GTmQL88utC5nBSz3nRqb7eM8ylOF/wVNxS3NrLjrMYvXp3UIZt1xFdqkZtMJgAOA==
@@ -236,9 +236,9 @@ isarray@2.0.1:
   integrity sha1-o32U7ZzaLVmGXJ92/llu4fM4dB4=
 
 lodash@^4.17.11:
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
-  integrity sha512-8xOcRHvCjnocdS5cpwXQXVzmmh5e5+saE2QGoeQmbKmRS6J3VQppPOIt0MnmE+4xlZoumy0GPG0D0MVIQbNA1A==
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 long@^4.0.0:
   version "4.0.0"
